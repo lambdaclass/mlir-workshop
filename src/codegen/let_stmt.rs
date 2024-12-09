@@ -1,15 +1,17 @@
 use std::collections::HashMap;
 
-use melior::ir::{Block, BlockRef, Value};
+use melior::ir::{Block, Value};
 
 use crate::ast::LetStmt;
 
-use super::FunctionCtx;
+use super::{expressions::compile_expr, ModuleCtx};
 
 pub fn compile_let<'ctx: 'parent, 'parent>(
-    ctx: &FunctionCtx<'ctx>,
+    ctx: &ModuleCtx<'ctx>,
     locals: &mut HashMap<String, Value<'ctx, 'parent>>,
     block: &'parent Block<'ctx>,
     stmt: &LetStmt,
 ) {
+    let value = compile_expr(ctx, locals, block, &stmt.expr);
+    locals.insert(stmt.variable.clone(), value);
 }

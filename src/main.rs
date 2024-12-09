@@ -47,9 +47,11 @@ fn main() {
     let context = Context::new();
     context.append_dialect_registry(&registry);
     context.load_all_available_dialects();
+
+    let module = Module::new(Location::unknown(&context));
     let ctx = ModuleCtx {
         ctx: &context,
-        module: Module::new(Location::unknown(&context)),
+        module: &module,
     };
 
     compile_program(&ctx, &program, args.optlevel.into(), &args.output);
