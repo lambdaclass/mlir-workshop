@@ -1,0 +1,17 @@
+[package]
+name = "mlir-workshop"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = "4.5.23"
+logos = "0.15.0"
+melior = { version = "0.19.2", features = ["ods-dialects"] }
+mlir-sys = "0.3.0"
+lalrpop-util = { version = "0.22.0", features = ["lexer"] }
+ariadne = { version = "0.5.0", features = ["auto-color"] }
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+
+[build-dependencies]
+lalrpop = "0.22.0"

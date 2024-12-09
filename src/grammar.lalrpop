@@ -1,0 +1,113 @@
+use std::str::FromStr;
+use crate::ast::*;
+
+grammar;
+
+Comma<T>: Vec<T> = { // (1)
+    <mut v:(<T> ",")*> <e:T?> => match e { // (2)
+        None => v,
+        Some(e) => {
+            v.push(e);
+            v
+        }
+    }
+};
+
+SemiColon<T>: Vec<T> = { // (1)
+    <mut v:(<T> ";")*> <e:T?> => match e { // (2)
+        None => v,
+        Some(e) => {
+            v.push(e);
+            v
+        }
+    }
+};
+
+Num: i32 = {
+    r"[0-9]+" => i32::from_str(<>).unwrap(),
+};
+
+Name: String = {
+    r"_?[a-zA-Z]+" => <>.to_string(),
+}
+
+Term: Expr = {
+    Num => Expr::Number(<>),
+    <Name> => Expr::Variable(<>),
+    "(" <Expr> ")",
+};
+
+pub Expr: Expr = {
+    #[precedence(level="0")] // Highest precedence
+    Term,
+    #[precedence(level="1")] #[assoc(side="left")]
+    <l:Expr> "==" <r:Expr> => Expr::Op(Box::new(l), Opcode::Eq, Box::new(r)),
+    <l:Expr> "!=" <r:Expr> => Expr::Op(Box::new(l), Opcode::Neq, Box::new(r)),
+    #[precedence(level="2")] #[assoc(side="left")]
+    <l:Expr> "*" <r:Expr> => Expr::Op(Box::new(l), Opcode::Mul, Box::new(r)),
+    <l:Expr> "/" <r:Expr> => Expr::Op(Box::new(l), Opcode::Div, Box::new(r)),
+    #[precedence(level="3")] #[assoc(side="left")]
+    <l:Expr> "+" <r:Expr> => Expr::Op(Box::new(l), Opcode::Add, Box::new(r)),
+    <l:Expr> "-" <r:Expr> => Expr::Op(Box::new(l), Opcode::Sub, Box::new(r)),
+};
+
+
+pub Let: LetStmt = {
+    "let" <variable:Name> "=" <expr:Expr> => {
+        LetStmt {
+            variable,
+            expr
+        }
+    }
+}
+
+pub Return: ReturnStmt = {
+    "return" <expr:Expr> => {
+        ReturnStmt {
+            expr
+        }
+    }
+}
+
+
+pub If: IfStmt = {
+    "if" <cond:Expr> "{" <then:Block> "}" <r#else:Else?> => {
+        IfStmt {
+            cond,
+            then,
+            r#else,
+        }
+    }
+}
+
+pub Else: Block = {
+    "else" "{" <Block> "}" => <>
+}
+
+pub Stmt: Statement = {
+    <Let> => Statement::Let(<>),
+    <If> => Statement::If(<>),
+    <Return> => Statement::Return(<>),
+}
+
+Statements = SemiColon<Stmt>;
+
+Block: Block = {
+    <Statements> => Block {
+        stmts: <>
+    }
+}
+
+Function: Function = {
+    "fn" <name:Name> "(" <args:Comma<Name>> ")" "{" <body:Block> "}" => Function {
+        name,
+        args,
+        body
+    },
+}
+
+pub Program: Program = {
+    <Function+> => Program {
+        functions: <>
+    }
+}
