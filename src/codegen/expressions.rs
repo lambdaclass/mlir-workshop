@@ -19,8 +19,6 @@ pub fn compile_expr<'c, 'b>(
             let lhs = compile_expr(ctx, locals, block, lhs_expr);
             let rhs = compile_expr(ctx, locals, block, rhs_expr);
 
-            // Bonus: Add short circuit for bool operations.
-
             match opcode {
                 Opcode::Mul => todo!(),
                 Opcode::Div => todo!(),
