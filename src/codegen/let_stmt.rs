@@ -4,7 +4,7 @@ use melior::ir::{Block, Value};
 
 use crate::ast::LetStmt;
 
-use super::{expressions::compile_expr, ModuleCtx};
+use super::ModuleCtx;
 
 pub fn compile_let<'ctx: 'parent, 'parent>(
     ctx: &ModuleCtx<'ctx>,

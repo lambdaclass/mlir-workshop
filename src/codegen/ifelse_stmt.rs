@@ -1,13 +1,10 @@
-use std::{collections::HashMap, ops::Deref};
+use std::collections::HashMap;
 
-use melior::{
-    dialect::scf,
-    ir::{Block, BlockRef, Region, Value},
-};
+use melior::ir::{Block, Value};
 
 use crate::ast::IfStmt;
 
-use super::{expressions::compile_expr, ModuleCtx};
+use super::ModuleCtx;
 
 pub fn compile_if<'ctx, 'parent>(
     ctx: &ModuleCtx<'ctx>,

@@ -31,8 +31,8 @@ struct Args {
     output: PathBuf,
 
     /// Number of times to greet
-    #[arg(short, long, default_value_t = 3)]
-    optlevel: u8,
+    #[arg(long, default_value_t = 3)]
+    opt_level: u8,
 }
 
 fn main() {
@@ -54,5 +54,5 @@ fn main() {
         module: &module,
     };
 
-    compile_program(&ctx, &program, args.optlevel.into(), &args.output);
+    compile_program(&ctx, &program, args.opt_level.into(), &args.output);
 }
