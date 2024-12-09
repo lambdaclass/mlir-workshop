@@ -49,9 +49,9 @@ exit:
 }
 ```
 
-To model the specific attributes of the CPU we want to target, we define a [datalayout](https://llvm.org/docs/LangRef.html#langref-datalayout) and specify a target triple, such as `x86_64-apple-macosx10.7.0`
+To model the specific attributes of the CPU we want to target, we define a [data layout](https://llvm.org/docs/LangRef.html#langref-datalayout) and specify a target triple, such as `x86_64-apple-macosx10.7.0`
 
-The datalayout specified how data is laid out in memory, such as the alignment and size of different data types, whether its big or little endian, etc.
+The datalayout specifies how data is laid out in memory, such as the alignment and size of different data types, whether its big or little endian, etc.
 
 The LLVM IR uses the following structure:
 
