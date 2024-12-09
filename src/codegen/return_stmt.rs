@@ -12,4 +12,5 @@ pub fn compile_return<'ctx, 'parent>(
     block: &'parent Block<'ctx>,
     stmt: &ReturnStmt,
 ) {
+    todo!()
 }

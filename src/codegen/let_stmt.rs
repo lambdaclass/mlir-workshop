@@ -12,6 +12,5 @@ pub fn compile_let<'ctx: 'parent, 'parent>(
     block: &'parent Block<'ctx>,
     stmt: &LetStmt,
 ) {
-    let value = compile_expr(ctx, locals, block, &stmt.expr);
-    locals.insert(stmt.variable.clone(), value);
+    todo!()
 }

@@ -15,5 +15,5 @@ pub fn compile_if<'ctx, 'parent>(
     block: &'parent Block<'ctx>,
     stmt: &IfStmt,
 ) {
-    let cond = compile_expr(ctx, locals, block, &stmt.cond);
+    todo!()
 }
