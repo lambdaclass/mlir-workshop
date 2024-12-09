@@ -2,9 +2,20 @@
 
 ## Project Setup
 
-### Dependencies
+### Easy way
+
+```bash
+git clone https://github.com/lambdaclass/mlir-workshop
+cd mlir-workshop
+make deps
+source env.sh
+make build
+```
+
+### Dependencies (manual way)
 - Rust
 - LLVM and MLIR
+
 
 To install LLVM and MLIR you can do so through brew:
 
