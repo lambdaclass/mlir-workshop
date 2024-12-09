@@ -1,6 +1,6 @@
 #[derive(Debug, Clone)]
 pub enum Expr {
-    Number(i32),
+    Number(i64),
     Variable(String),
     Op(Box<Expr>, Opcode, Box<Expr>),
 }
