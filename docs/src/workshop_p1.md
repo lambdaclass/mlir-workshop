@@ -1,4 +1,4 @@
-# Implementing the language: 1
+# Workshop: Setup
 
 ## Project Setup
 
@@ -23,4 +23,8 @@ export LLVM_SYS_191_PREFIX="$(brew --prefix llvm@19)"
 export TABLEGEN_190_PREFIX="$(brew --prefix llvm@19)"
 ```
 
-TODO
+Verify you can build the project:
+
+```bash
+cargo build
+```

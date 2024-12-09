@@ -1,6 +1,6 @@
 # About this Workshop
 
-In this workshop you will learn a bit about what is LLVM and MLIR, by implementing a really simple programming language compiler. This language only has variables of type u64, and only supports simple functions with arguments, basic arithmetic operations and if else statements.
+In this workshop you will learn a bit about what is LLVM and MLIR, by implementing a really simple programming language compiler. This language only has variables of type i64, and only supports simple functions with arguments, basic arithmetic operations and if else statements.
 
 # What is LLVM?
 
@@ -127,7 +127,7 @@ In our case, we want to have a compiled program, so LLVM IR will be our target, 
 
 # Other Learning Resources
 
-These are extra resources, they aren't meant to be read now in the workshop but they are here for your convenience.
+> These are extra resources, they aren't meant to be read now in the workshop but they are here for your convenience.
 
 Resources marked with **→** are best.
 
