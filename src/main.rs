@@ -1,12 +1,14 @@
 use std::fs;
 
-use codegen::{compile_program, CompileCtx};
+use codegen::{compile_program, ModuleCtx};
 use lalrpop_util::lalrpop_mod;
-use melior::{ir::{Location, Module}, Context};
+use melior::{
+    ir::{Location, Module},
+    Context,
+};
 
 mod ast;
 mod codegen;
-
 
 lalrpop_mod!(
     #[allow(clippy::ptr_arg)]
@@ -20,12 +22,12 @@ fn main() {
     let program = grammar::ProgramParser::new().parse(&source).unwrap();
 
     let context = Context::new();
-    let ctx = CompileCtx {
+    let ctx = ModuleCtx {
         ctx: &context,
-        module: Module::new(Location::unknown(&context))
+        module: Module::new(Location::unknown(&context)),
     };
 
     dbg!(&program);
 
-    compile_program(&program, &ctx);
+    compile_program(&ctx, &program);
 }
