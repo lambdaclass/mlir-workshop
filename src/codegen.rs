@@ -1,8 +1,7 @@
 use std::{collections::HashMap, path::Path};
 
 use melior::{
-    dialect::{self, llvm::r#type::pointer, ods},
-    ir::{r#type::IntegerType, Block, BlockRef, Location, Module, Operation, Region, Type, Value},
+    ir::{Block, BlockRef, Module, Region, Value},
     Context,
 };
 
