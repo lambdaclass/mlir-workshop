@@ -6,12 +6,12 @@ use crate::ast::{Expr, Opcode};
 
 use super::FunctionCtx;
 
-pub fn compile_expr<'c, 'b>(
-    ctx: &FunctionCtx<'c>,
-    locals: &HashMap<String, Value>,
-    block: &'b Block<'c>,
+pub fn compile_expr<'ctx: 'parent, 'parent>(
+    ctx: &FunctionCtx<'ctx>,
+    locals: &HashMap<String, Value<'ctx, 'parent>>,
+    block: &'parent Block<'ctx>,
     expr: &Expr,
-) -> Value<'c, 'b> {
+) -> Value<'ctx, 'parent> {
     match expr {
         Expr::Number(x) => todo!(),
         Expr::Variable(name) => todo!(),

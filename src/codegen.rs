@@ -43,10 +43,11 @@ pub struct FunctionCtx<'c> {
     pub region: Region<'c>,
 }
 
-fn compile_function(ctx: &ModuleCtx, func: &Function) {
-    let mut locals: HashMap<String, Value> = HashMap::new();
+fn compile_function<'ctx>(ctx: &ModuleCtx<'ctx>, func: &Function) {
+    let mut locals: HashMap<String, Value<'ctx, '_>> = HashMap::new();
 
     let ctx = todo!("implement me");
+    let region = todo!("implement me");
     let block = todo!("implement me");
 
     for stmt in &func.body.stmts {
@@ -54,10 +55,10 @@ fn compile_function(ctx: &ModuleCtx, func: &Function) {
     }
 }
 
-fn compile_statement<'c>(
-    ctx: &FunctionCtx<'c>,
-    locals: &mut HashMap<String, Value>,
-    block: BlockRef<'c, '_>,
+fn compile_statement<'ctx: 'parent, 'parent>(
+    ctx: &FunctionCtx<'ctx>,
+    locals: &mut HashMap<String, Value<'ctx, 'parent>>,
+    block: &'parent Block<'ctx>,
     stmt: &Statement,
 ) {
     match stmt {
