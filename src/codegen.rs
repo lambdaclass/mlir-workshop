@@ -70,7 +70,7 @@ fn compile_statement<'ctx: 'parent, 'parent>(
             compile_if(ctx, locals, block, if_stmt);
         }
         Statement::Return(return_stmt) => {
-            compile_return(ctx, locals, &block, return_stmt);
+            compile_return(ctx, locals, block, return_stmt);
         }
     }
 }
