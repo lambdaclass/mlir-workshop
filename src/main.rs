@@ -1,5 +1,6 @@
-use std::fs;
+use std::{fs, path::PathBuf};
 
+use clap::Parser;
 use codegen::{compile_program, ModuleCtx};
 use lalrpop_util::lalrpop_mod;
 use melior::{
@@ -9,6 +10,7 @@ use melior::{
 
 mod ast;
 mod codegen;
+mod util;
 
 lalrpop_mod!(
     #[allow(clippy::ptr_arg)]
@@ -16,9 +18,24 @@ lalrpop_mod!(
     grammar
 );
 
+/// Simple program to greet a person
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    /// Program file
+    input: PathBuf,
+
+    #[arg(short, long, default_value = "out.a")]
+    output: PathBuf,
+
+    /// Number of times to greet
+    #[arg(short, long, default_value_t = 3)]
+    optlevel: u8,
+}
+
 fn main() {
-    let source = std::env::args().nth(1).unwrap();
-    let source = fs::read_to_string(&source).unwrap();
+    let args = Args::parse();
+    let source = fs::read_to_string(&args.input).unwrap();
     let program = grammar::ProgramParser::new().parse(&source).unwrap();
 
     let context = Context::new();
@@ -27,7 +44,5 @@ fn main() {
         module: Module::new(Location::unknown(&context)),
     };
 
-    dbg!(&program);
-
-    compile_program(&ctx, &program);
+    compile_program(&ctx, &program, args.optlevel.into(), &args.output);
 }
