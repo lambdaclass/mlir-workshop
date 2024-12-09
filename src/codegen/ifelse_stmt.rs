@@ -1,15 +1,19 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, ops::Deref};
 
-use melior::ir::{BlockRef, Value};
+use melior::{
+    dialect::scf,
+    ir::{Block, BlockRef, Region, Value},
+};
 
 use crate::ast::IfStmt;
 
-use super::FunctionCtx;
+use super::{expressions::compile_expr, ModuleCtx};
 
-pub fn compile_if<'c>(
-    ctx: &FunctionCtx<'c>,
-    locals: &mut HashMap<String, Value>,
-    block: BlockRef<'c, '_>,
+pub fn compile_if<'ctx, 'parent>(
+    ctx: &ModuleCtx<'ctx>,
+    locals: &mut HashMap<String, Value<'ctx, 'parent>>,
+    block: &'parent Block<'ctx>,
     stmt: &IfStmt,
 ) {
+    todo!()
 }

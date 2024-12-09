@@ -1,15 +1,16 @@
 use std::collections::HashMap;
 
-use melior::ir::{BlockRef, Value};
+use melior::ir::{Block, BlockRef, Value};
 
 use crate::ast::ReturnStmt;
 
-use super::FunctionCtx;
+use super::ModuleCtx;
 
-pub fn compile_return<'c>(
-    ctx: &FunctionCtx<'c>,
+pub fn compile_return<'ctx, 'parent>(
+    ctx: &ModuleCtx<'ctx>,
     locals: &HashMap<String, Value>,
-    block: BlockRef<'c, '_>,
+    block: &'parent Block<'ctx>,
     stmt: &ReturnStmt,
 ) {
+    todo!()
 }

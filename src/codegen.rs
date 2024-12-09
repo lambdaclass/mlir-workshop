@@ -3,7 +3,7 @@ use std::{collections::HashMap, path::Path};
 use ifelse_stmt::compile_if;
 use let_stmt::compile_let;
 use melior::{
-    ir::{Block, BlockRef, Module, Region, Value},
+    ir::{r#type::IntegerType, Block, BlockRef, Location, Module, Region, Type, Value},
     Context,
 };
 use return_stmt::compile_return;
@@ -20,7 +20,7 @@ pub mod return_stmt;
 
 pub struct ModuleCtx<'c> {
     pub ctx: &'c Context,
-    pub module: Module<'c>,
+    pub module: &'c Module<'c>,
 }
 
 pub fn compile_program(ctx: &ModuleCtx, program: &Program, optlevel: OptLevel, out_name: &Path) {
@@ -37,32 +37,40 @@ pub fn compile_program(ctx: &ModuleCtx, program: &Program, optlevel: OptLevel, o
     link_binary(&[out_obj], out_name).unwrap();
 }
 
-pub struct FunctionCtx<'c> {
-    pub ctx: &'c Context,
-    pub module: Module<'c>,
-    pub region: Region<'c>,
-}
+fn compile_function<'ctx>(ctx: &ModuleCtx<'ctx>, func: &Function) {
+    let mut args: Vec<(Type, Location)> = vec![];
 
-fn compile_function(ctx: &ModuleCtx, func: &Function) {
+    for _ in &func.args {
+        args.push((
+            IntegerType::new(&ctx.ctx, 64).into(),
+            Location::unknown(&ctx.ctx),
+        ));
+    }
+
+    let region = Region::new();
+    let mut block = region.append_block(Block::new(&args));
     let mut locals: HashMap<String, Value> = HashMap::new();
 
-    let ctx = todo!("implement me");
-    let block = todo!("implement me");
-
     for stmt in &func.body.stmts {
-        compile_statement(ctx, &mut locals, block, stmt);
+        compile_statement(&ctx, &mut locals, &block, stmt);
     }
 }
 
-fn compile_statement<'c>(
-    ctx: &FunctionCtx<'c>,
-    locals: &mut HashMap<String, Value>,
-    block: BlockRef<'c, '_>,
+fn compile_statement<'ctx: 'parent, 'parent>(
+    ctx: &ModuleCtx<'ctx>,
+    locals: &mut HashMap<String, Value<'ctx, 'parent>>,
+    block: &'parent Block<'ctx>,
     stmt: &Statement,
 ) {
     match stmt {
-        Statement::Let(let_stmt) => compile_let(ctx, locals, block, let_stmt),
-        Statement::If(if_stmt) => compile_if(ctx, locals, block, if_stmt),
-        Statement::Return(return_stmt) => compile_return(ctx, locals, block, return_stmt),
+        Statement::Let(let_stmt) => {
+            compile_let(ctx, locals, block, let_stmt);
+        }
+        Statement::If(if_stmt) => {
+            compile_if(ctx, locals, block, if_stmt);
+        }
+        Statement::Return(return_stmt) => {
+            compile_return(ctx, locals, block, return_stmt);
+        }
     }
 }
