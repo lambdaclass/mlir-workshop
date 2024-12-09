@@ -1,21 +1,32 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, path::Path};
 
 use melior::{
     ir::{Block, BlockRef, Module, Region, Value},
     Context,
 };
 
-use crate::ast::{Expr, Function, IfStmt, LetStmt, Opcode, Program, ReturnStmt, Statement};
+use crate::{
+    ast::{Expr, Function, IfStmt, LetStmt, Opcode, Program, ReturnStmt, Statement},
+    util::{link_binary, llvm_compile, OptLevel},
+};
 
 pub struct ModuleCtx<'c> {
     pub ctx: &'c Context,
     pub module: Module<'c>,
 }
 
-pub fn compile_program(ctx: &ModuleCtx, program: &Program) {
+pub fn compile_program(ctx: &ModuleCtx, program: &Program, optlevel: OptLevel, out_name: &Path) {
     for func in &program.functions {
         compile_function(ctx, func);
     }
+
+    // Run passes on module to convert all dialects to LLVM.
+
+    // Convert the MLIR to LLVM IR (requires unsafe since we use mlir-sys and llvm-sys for this)
+    let object = unsafe { llvm_compile(&ctx.module, optlevel) };
+    let out_obj = out_name.with_extension("o");
+    std::fs::write(&out_obj, &object).unwrap();
+    link_binary(&[out_obj], out_name).unwrap();
 }
 
 pub struct FunctionCtx<'c> {
@@ -82,8 +93,8 @@ fn compile_expr<'c, 'b>(
         Expr::Number(x) => todo!(),
         Expr::Variable(name) => todo!(),
         Expr::Op(lhs_expr, opcode, rhs_expr) => {
-            let lhs = compile_expr(ctx, locals, block, &lhs_expr);
-            let rhs = compile_expr(ctx, locals, block, &rhs_expr);
+            let lhs = compile_expr(ctx, locals, block, lhs_expr);
+            let rhs = compile_expr(ctx, locals, block, rhs_expr);
 
             // Bonus: Add short circuit for bool operations.
 

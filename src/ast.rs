@@ -54,5 +54,5 @@ pub struct Function {
 
 #[derive(Debug, Clone)]
 pub struct Program {
-    pub functions: Vec<Function>
+    pub functions: Vec<Function>,
 }
