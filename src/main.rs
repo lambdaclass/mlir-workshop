@@ -39,23 +39,15 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-    use std::ptr::null_mut;
 
     use melior::ExecutionEngine;
 
     use crate::{codegen::compile_program_jit, grammar};
 
-    fn call_program(engine: &ExecutionEngine, params: &[i64]) -> i64 {
-        let return_ptr: *mut () = null_mut();
-        let mut args = vec![return_ptr];
-
-        for arg in params {
-            args.push(arg as *const _ as *mut ());
-        }
-        let args = &mut [return_ptr];
+    fn call_program(engine: &ExecutionEngine, a: i64, b: i64) -> i64 {
         unsafe {
-            engine.invoke_packed("add", args).unwrap();
-            *return_ptr.cast::<i64>()
+            let add: extern "C" fn(i64, i64) -> i64 = std::mem::transmute(engine.lookup("test"));
+            add(a, b)
         }
     }
 
@@ -67,7 +59,7 @@ mod tests {
 
         let engine = compile_program_jit(&program);
 
-        let res = call_program(&engine, &[2, 3]);
-        assert_eq!(res, 4);
+        let res = call_program(&engine, 2, 3);
+        assert_eq!(res, 5);
     }
 }

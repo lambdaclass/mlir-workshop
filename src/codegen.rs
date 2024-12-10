@@ -3,8 +3,16 @@ use std::{collections::HashMap, path::Path};
 use ifelse_stmt::compile_if;
 use let_stmt::compile_let;
 use melior::{
-    dialect::DialectRegistry,
-    ir::{r#type::IntegerType, Block, Location, Module, Region, Type, Value},
+    dialect::{
+        func::{self, func},
+        DialectRegistry,
+    },
+    helpers::LlvmBlockExt,
+    ir::{
+        attribute::{StringAttribute, TypeAttribute},
+        r#type::{FunctionType, IntegerType},
+        Block, Location, Module, Region, Type, Value,
+    },
     pass::{self, PassManager},
     utility::register_all_dialects,
     Context, ExecutionEngine,
@@ -87,22 +95,28 @@ pub fn compile_program_jit(program: &Program) -> ExecutionEngine {
     pass_manager.add_pass(pass::conversion::create_to_llvm());
     pass_manager.run(&mut module).unwrap();
 
+    println!("{}", module.as_operation().to_string());
+
     ExecutionEngine::new(&module, 3, &[], false)
 }
 
 fn compile_function(ctx: &ModuleCtx<'_>, func: &Function) {
     let mut args: Vec<(Type, Location)> = vec![];
+    let mut func_args: Vec<Type> = Vec::new();
 
     for _ in &func.args {
         args.push((
             IntegerType::new(ctx.ctx, 64).into(),
             Location::unknown(ctx.ctx),
         ));
+        func_args.push(IntegerType::new(ctx.ctx, 64).into());
     }
 
     let region = Region::new();
     let block = region.append_block(Block::new(&args));
     let mut locals: HashMap<String, Value> = HashMap::new();
+
+    // Allocate space for the arguments, get them from the block, storing them and save them on locals hashmap.
 
     for stmt in &func.body.stmts {
         compile_statement(ctx, &mut locals, &block, stmt);
