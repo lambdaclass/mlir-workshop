@@ -6,7 +6,7 @@ In this workshop you will learn a bit about what is LLVM and MLIR, by implementi
 
 To know about MLIR, you need to know what is LLVM.
 
-LLVM is what one would call a compiler backend, made of many resuable components, it deals with the intrinsicacies of each CPU architecture, providing a higher level API for programmers to work with, kind of like a "game engine" but for making compiled (or JIT) programming languages, so you don't have to deal with the lowest level details (lower than what some people call low-level anyway).
+LLVM is what one would call a compiler backend, made of many reusable components, it deals with the intrinsicacies of each CPU architecture, providing a higher level API for programmers to work with, kind of like a "game engine" but for making compiled (or JIT) programming languages, so you don't have to deal with the lowest level details (lower than what some people call low-level anyway).
 
 To abstract away all the specific cpu details, LLVM is a "target", with high level pseudo-assembly, what we call the LLVM IR. We can consider LLVM an abstract machine (much like C), it has infinite registers and some other details, to program this machine we use LLVM IR (IR means Intermediate Representation).
 
@@ -51,7 +51,7 @@ exit:
 
 To model the specific attributes of the CPU we want to target, we define a [data layout](https://llvm.org/docs/LangRef.html#langref-datalayout) and specify a target triple, such as `x86_64-apple-macosx10.7.0`
 
-The datalayout specifies how data is laid out in memory, such as the alignment and size of different data types, whether its big or little endian, etc.
+The data layout specifies how data is laid out in memory, such as the alignment and size of different data types, whether its big or little endian, etc.
 
 The LLVM IR uses the following structure:
 
@@ -80,7 +80,7 @@ Some notable dialects:
 
 - Builtin: The builtin dialect contains a core set of Attributes, Operations, and Types that have wide applicability across a very large number of domains and abstractions. Many of the components of this dialect are also instrumental in the implementation of the core IR.
 - Affine: This dialect provides a powerful abstraction for affine operations and analyses.
-- Async: Types and operations for async dialect This dialect contains operations for modeling asynchronous execution.
+- Async: This dialect contains operations for modeling asynchronous execution.
 - SCF: The scf (structured control flow) dialect contains operations that represent control flow constructs such as if and for. Being structured means that the control flow has a structure unlike, for example, gotos or asserts.
 - CF: This dialect contains low-level, i.e. non-region based, control flow constructs. These constructs generally represent control flow directly on SSA blocks of a control flow graph.
 - LLVM: This dialect maps LLVM IR into MLIR by defining the corresponding operations and types. LLVM IR metadata is usually represented as MLIR attributes, which offer additional structure verification.
@@ -118,12 +118,11 @@ module {
 }
 ```
 
-In MLIR, blocks can have arguments, this is the MLIR solution to PHI nodes, if a target block uses a variable for multiple independent branches, add its as an argument and the jumps from the predecessors must pass it in the respective jump operation.
+In MLIR, blocks can have arguments, this is the MLIR solution to PHI nodes. If a target block uses a variable for multiple independent branches, add it as an argument and the jumps from the predecessors must pass it in the respective jump operation.
 
-You can see in the code that there is a while loop, this is thanks to the SCF dialect, which provides high level control flow operations, if your target is LLVM, this dialect is then converted into blocks and LLVM dialect jumps.
+You can see in the code that there is a while loop. This is thanks to the SCF dialect, which provides high level control flow operations. If your target is LLVM, this dialect is then converted into blocks and LLVM dialect jumps.
 
 In our case, we want to have a compiled program, so LLVM IR will be our target, this means we have to add passes to convert the multiple dialects we use into the LLVM dialect, and then convert the MLIR to LLVM IR and compile it. This is done either programatically or with `mlir-opt` and `mlir-translate`.
-
 
 # Other Learning Resources
 
@@ -132,32 +131,32 @@ In our case, we want to have a compiled program, so LLVM IR will be our target, 
 Resources marked with **→** are best.
 
 - Introduction
-    - **→** [2019 EuroLLVM Developers’ Meeting: MLIR: Multi-Level Intermediate Representation Compiler Infrastructure](https://www.youtube.com/watch?v=qzljG6DKgic)
-    - → [MLIR: A Compiler Infrastructure for the End of Moore’s Law](https://arxiv.org/pdf/2002.11054.pdf)
+  - **→** [2019 EuroLLVM Developers’ Meeting: MLIR: Multi-Level Intermediate Representation Compiler Infrastructure](https://www.youtube.com/watch?v=qzljG6DKgic)
+  - → [MLIR: A Compiler Infrastructure for the End of Moore’s Law](https://arxiv.org/pdf/2002.11054.pdf)
     The paper introducing the MLIR framework
-        - 7-minute video summary of paper:
+    - 7-minute video summary of paper:
         [Read a paper: Multi-level Intermediate Representation (MLIR)](https://www.youtube.com/watch?v=6BwqK6E8v3g)
-        - Another version of the paper:
+    - Another version of the paper:
         [MLIR: Scaling Compiler Infrastructure for Domain Specific Computation](https://storage.googleapis.com/pub-tools-public-publication-data/pdf/85bf23fe88bd5c7ff60365bd0c6882928562cbeb.pdf)
 - MLIR Tutorial
-    - **→** (slides) [MLIR Tutorial (LLVM Dev Mtg, 2020)](https://llvm.org/devmtg/2020-09/slides/MLIR_Tutorial.pdf)
-    - **→** (video) [2020 LLVM Developers’ Meeting: M. Amini & R. Riddle “MLIR Tutorial”](https://www.youtube.com/watch?v=Y4SvqTtOIDk)
-    - (older slides) [MLIR Tutorial (LLVM Developers Meeting, Euro-LLVM 2019)](https://llvm.org/devmtg/2019-04/slides/Tutorial-AminiVasilacheZinenko-MLIR.pdf)
-    - (older slides) [MLIR Tutorial (MLIR 4 HPC, 2019)](https://users.cs.utah.edu/~mhall/mlir4hpc/pienaar-MLIR-Tutorial.pdf)
-    - (older video) [2019 EuroLLVM Developers’ Meeting: Mehdi & Vasilache & Zinenko “Building a Compiler with MLIR”](https://www.youtube.com/watch?v=cyICUIZ56wQ)
+  - **→** (slides) [MLIR Tutorial (LLVM Dev Mtg, 2020)](https://llvm.org/devmtg/2020-09/slides/MLIR_Tutorial.pdf)
+  - **→** (video) [2020 LLVM Developers’ Meeting: M. Amini & R. Riddle “MLIR Tutorial”](https://www.youtube.com/watch?v=Y4SvqTtOIDk)
+  - (older slides) [MLIR Tutorial (LLVM Developers Meeting, Euro-LLVM 2019)](https://llvm.org/devmtg/2019-04/slides/Tutorial-AminiVasilacheZinenko-MLIR.pdf)
+  - (older slides) [MLIR Tutorial (MLIR 4 HPC, 2019)](https://users.cs.utah.edu/~mhall/mlir4hpc/pienaar-MLIR-Tutorial.pdf)
+  - (older video) [2019 EuroLLVM Developers’ Meeting: Mehdi & Vasilache & Zinenko “Building a Compiler with MLIR”](https://www.youtube.com/watch?v=cyICUIZ56wQ)
 - **→** Another MLIR Tutorial
-https://github.com/j2kun/mlir-tutorial
+<https://github.com/j2kun/mlir-tutorial>
 - **→** [How to build a compiler with LLVM and MLIR](https://www.youtube.com/playlist?list=PLlONLmJCfHTo9WYfsoQvwjsa5ZB6hjOG5)
 - Other articles, posts
-    - **→** [Intro to LLVM and MLIR with Rust and Melior](https://edgarluque.com/blog/mlir-with-rust/)
-    - **→** [MLIR Notes](http://lastweek.io/notes/MLIR/)
-    - **→** [Compilers and IRs: LLVM IR, SPIR-V, and MLIR](https://www.lei.chat/posts/compilers-and-irs-llvm-ir-spirv-and-mlir/) [[HN]](https://news.ycombinator.com/item?id=33387149)
-    - [MLIR: Redefining the compiler infrastructure](https://iq.opengenus.org/mlir-compiler-infrastructure/)
-    - [Pinch: Implementing a borrow-checked language with MLIR](https://badland.io/pinch.md)
+  - **→** [Intro to LLVM and MLIR with Rust and Melior](https://edgarluque.com/blog/mlir-with-rust/)
+  - **→** [MLIR Notes](http://lastweek.io/notes/MLIR/)
+  - **→** [Compilers and IRs: LLVM IR, SPIR-V, and MLIR](https://www.lei.chat/posts/compilers-and-irs-llvm-ir-spirv-and-mlir/) [[HN]](https://news.ycombinator.com/item?id=33387149)
+  - [MLIR: Redefining the compiler infrastructure](https://iq.opengenus.org/mlir-compiler-infrastructure/)
+  - [Pinch: Implementing a borrow-checked language with MLIR](https://badland.io/pinch.md)
 - [Official Documentation](https://mlir.llvm.org/docs/)
-    - [MLIR Homepage](https://mlir.llvm.org/)
-    - [MLIR Language Reference](https://mlir.llvm.org/docs/LangRef/)
-    - [MLIR Compiler](https://www.youtube.com/MLIRCompiler) Youtube Channel
+  - [MLIR Homepage](https://mlir.llvm.org/)
+  - [MLIR Language Reference](https://mlir.llvm.org/docs/LangRef/)
+  - [MLIR Compiler](https://www.youtube.com/MLIRCompiler) Youtube Channel
 
 ### Talks, Presentations, & Videos
 
@@ -169,7 +168,7 @@ https://github.com/j2kun/mlir-tutorial
 - [2022 EuroLLVM Dev Mtg “Prototyping a Compiler for Homomorphic Encryption Using MLIR”](https://www.youtube.com/watch?v=QyxiqmO6_qQ)
 - [cirgen: MLIR based compiler for zk-STARK circuit generation - Frank Laub (RISC Zero)](https://www.youtube.com/watch?v=TsP14-hI_W0)
 - [Prototyping a compiler for homomorphic encryption using MLIR](https://www.youtube.com/watch?v=F9qXBuSkQFY)
-    - [Slides](https://llvm.org/devmtg/2022-04-03/slides/Prototyping.a.compiler.for.homomorphic.encryption.in.MLIR.pdf)
+  - [Slides](https://llvm.org/devmtg/2022-04-03/slides/Prototyping.a.compiler.for.homomorphic.encryption.in.MLIR.pdf)
 - [The HEIR Compiler w/ Jeremy Kun](https://www.youtube.com/watch?v=ne5D_kqlxYg)
 
 ### Useful code

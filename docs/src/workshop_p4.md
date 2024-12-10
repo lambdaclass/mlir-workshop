@@ -1,6 +1,6 @@
 # Workshop: Compiling Let
 
-On let statements, variables are declared, as explained before, in this case we need to allocate space for it and save the
+On let statements, variables are declared, as explained before. In this case we need to allocate space for it and save the
 pointer value on the `locals` hashmap.
 
 You will need to use the `llvm` dialect.
