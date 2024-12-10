@@ -12,25 +12,29 @@ use crate::ast::{Expr, Opcode};
 use super::ModuleCtx;
 
 pub fn compile_expr<'ctx: 'parent, 'parent>(
+    // Helper struct with the MLIR Context and Module
     ctx: &ModuleCtx<'ctx>,
+    // Hashmap storing the local variables
     locals: &HashMap<String, Value<'ctx, 'parent>>,
+    // The current block to work on.
     block: &'parent Block<'ctx>,
+    // The expression to compile.
     expr: &Expr,
 ) -> Value<'ctx, 'parent> {
     match expr {
         Expr::Number(_value) => {
-            todo!()
+            todo!("implement constant numbers")
         }
         Expr::Variable(name) => {
-            todo!()
+            todo!("implement loading values from the given variable name")
         }
         Expr::Op(lhs_expr, opcode, rhs_expr) => match opcode {
-            Opcode::Mul => todo!(),
-            Opcode::Div => todo!(),
-            Opcode::Add => todo!(),
-            Opcode::Sub => todo!(),
-            Opcode::Eq => todo!(),
-            Opcode::Neq => todo!(),
+            Opcode::Mul => todo!("implement mul"),
+            Opcode::Div => todo!("implement div"),
+            Opcode::Add => todo!("implement add"),
+            Opcode::Sub => todo!("implement sub"),
+            Opcode::Eq => todo!("implement eq"),
+            Opcode::Neq => todo!("implement neq"),
         },
     }
 }
