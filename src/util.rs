@@ -3,6 +3,7 @@ use std::{
     mem::MaybeUninit,
     path::{Path, PathBuf},
     ptr::null_mut,
+    sync::OnceLock,
 };
 
 use llvm_sys::{
@@ -12,6 +13,10 @@ use llvm_sys::{
     },
     error::LLVMGetErrorMessage,
     prelude::LLVMMemoryBufferRef,
+    target::{
+        LLVM_InitializeAllAsmPrinters, LLVM_InitializeAllTargetInfos, LLVM_InitializeAllTargetMCs,
+        LLVM_InitializeAllTargets,
+    },
     target_machine::{
         LLVMCodeGenFileType, LLVMCodeGenOptLevel, LLVMCodeModel, LLVMCreateTargetMachine,
         LLVMDisposeTargetMachine, LLVMGetDefaultTargetTriple, LLVMGetHostCPUFeatures,
@@ -46,6 +51,15 @@ impl From<u8> for OptLevel {
 }
 
 pub unsafe fn llvm_compile(module: &Module, optlevel: OptLevel) -> Vec<u8> {
+    static INITIALIZED: OnceLock<()> = OnceLock::new();
+    INITIALIZED.get_or_init(|| unsafe {
+        LLVM_InitializeAllTargets();
+        LLVM_InitializeAllTargetInfos();
+        LLVM_InitializeAllTargetMCs();
+        LLVM_InitializeAllAsmPrinters();
+        tracing::debug!("initialized llvm targets");
+    });
+
     let llvm_context = LLVMContextCreate();
 
     let op = module.as_operation().to_raw();
