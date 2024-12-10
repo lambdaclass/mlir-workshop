@@ -115,6 +115,10 @@ let operation = OperationBuilder::new("foo", Location::unknown(&context))
     .unwrap();
 ```
 
+### Helper Traits
+
+Some frequently used operations, mainly those in the llvm, arith and builtin dialects have a trait in melior to make it less verbose, it's a trait implemented on the Block so you can simply do `block.load(..)`.
+
 ## Region
 
 A region holds one or multiple blocks, it depends on the operation whether there are 1 or more regions.
