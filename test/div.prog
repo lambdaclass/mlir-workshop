@@ -1,0 +1,4 @@
+fn test(a, b) {
+    let x = a / b;
+    return x;
+}

@@ -1,4 +1,4 @@
-fn main(a, b, c) {
-    let x = a * b * c;
+fn main() {
+    let x = 2 * 3 * 4;
     return x;
 }

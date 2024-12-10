@@ -1,0 +1,11 @@
+fn test(a, b) {
+    let x = b;
+
+    if a == 1 {
+        x = b * 2;
+    } else {
+        x = b;
+    }
+
+    return x;
+}

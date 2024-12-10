@@ -1,0 +1,7 @@
+fn test(a, b) {
+    return double(a) + double(b);
+}
+
+fn double(b) {
+    return b * 2;
+}

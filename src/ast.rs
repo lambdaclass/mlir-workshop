@@ -22,6 +22,7 @@ pub enum Opcode {
 #[derive(Debug, Clone)]
 pub enum Statement {
     Let(LetStmt),
+    Assign(AssignStmt),
     If(IfStmt),
     Return(ReturnStmt),
 }
@@ -29,6 +30,13 @@ pub enum Statement {
 /// The let statement, it binds a value from an expression to the given variable.
 #[derive(Debug, Clone)]
 pub struct LetStmt {
+    pub variable: String,
+    pub expr: Expr,
+}
+
+/// The assign statement, it updates the value of the given variable.
+#[derive(Debug, Clone)]
+pub struct AssignStmt {
     pub variable: String,
     pub expr: Expr,
 }

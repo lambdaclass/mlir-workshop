@@ -51,15 +51,29 @@ mod tests {
         }
     }
 
-    #[test]
-    fn add() {
-        let program = grammar::ProgramParser::new()
-            .parse(include_str!("../test/add.prog"))
-            .unwrap();
+    macro_rules! program_test {
+        ($name:ident, $filename:ident, $a:literal, $b:literal, $r:literal) => {
+            #[test]
+            fn $name() {
+                let program = grammar::ProgramParser::new()
+                    .parse(include_str!(concat!("../test/", stringify!($filename), ".prog")))
+                    .unwrap();
 
-        let engine = compile_program_jit(&program);
+                let engine = compile_program_jit(&program);
 
-        let res = call_program(&engine, 2, 3);
-        assert_eq!(res, 5);
+                let res = call_program(&engine, $a, $b);
+                assert_eq!(res, $r);
+            }
+        };
     }
+
+    program_test!{add, add, 2, 2, 4}
+    program_test!{sub, sub, 2, 2, 0}
+    program_test!{subminus, sub, 2, 3, -1}
+    program_test!{mul, mul, 2, 4, 8}
+    program_test!{div, div, 4, 2, 2}
+    program_test!{ifelse, ifelse, 4, 2, 2}
+    program_test!{constant, constant, 2, 2, 6}
+    program_test!{call, call, 2, 2, 8}
+    program_test!{factorial, factorial, 5, 1, 120}
 }

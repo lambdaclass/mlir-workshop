@@ -1,7 +1,7 @@
 use std::{collections::HashMap, path::Path};
 
 use ifelse_stmt::compile_if;
-use let_stmt::compile_let;
+use let_stmt::{compile_assign, compile_let};
 use melior::{
     dialect::{
         func::{self, func},
@@ -145,5 +145,8 @@ fn compile_statement<'ctx: 'parent, 'parent>(
         Statement::Return(return_stmt) => {
             compile_return(ctx, locals, block, return_stmt);
         }
+        Statement::Assign(assign_stmt) => {
+            compile_assign(ctx, locals, block, assign_stmt);
+        },
     }
 }
