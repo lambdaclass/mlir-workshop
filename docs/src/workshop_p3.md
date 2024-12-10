@@ -34,6 +34,7 @@ pub fn compile_expr<'ctx: 'parent, 'parent>(
             Opcode::Eq => todo!("implement eq"),
             Opcode::Neq => todo!("implement neq"),
         },
+        Expr::Call { target, args } => todo!("implement function call"),
     }
 }
 ```

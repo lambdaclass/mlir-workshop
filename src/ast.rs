@@ -4,6 +4,10 @@
 pub enum Expr {
     Number(i64),
     Variable(String),
+    Call {
+        target: String,
+        args: Vec<Expr>,
+    },
     Op(Box<Expr>, Opcode, Box<Expr>),
 }
 

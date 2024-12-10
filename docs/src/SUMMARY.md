@@ -9,4 +9,4 @@
 - [Workshop: Compiling Return](./workshop_p5.md)
 - [Workshop: Compiling If/Else](./workshop_p6.md)
 - [Workshop: Compiling Function calls](./workshop_p7.md)
-- [Workshop: Extras](./workshop_p8.md)
+- [Workshop: Compiling Functions](./workshop_p8.md)

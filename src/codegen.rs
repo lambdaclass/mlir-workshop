@@ -77,6 +77,8 @@ fn compile_function(ctx: &ModuleCtx<'_>, func: &Function) {
     for stmt in &func.body.stmts {
         compile_statement(ctx, &mut locals, &block, stmt);
     }
+
+    // Create the func operation here.
 }
 
 fn compile_statement<'ctx: 'parent, 'parent>(

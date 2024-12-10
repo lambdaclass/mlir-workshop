@@ -126,7 +126,7 @@ A region holds one or multiple blocks, it depends on the operation whether there
 Usually multiple regions are used in higher level dialects, like SCF, which has while and for constructs, the CF dialect instead works
 with blocks.
 
-A region is more isolated than a block, you can easily use a value from a predecessor block within a given block, but taking a value from another region that is not a parent requires passing it as argument to the operation/block. This makes operations that work with regions like SCF a bit harder to work with in some contexts.
+A region is more isolated than a block, you can easily use a value from a predecessor block within a given block, but taking a value from another region that is not a parent requires passing it as an argument to the operation/block. This makes operations that work with regions like SCF a bit harder to work with in some contexts.
 
 ```rust
 let region = Region::new();
