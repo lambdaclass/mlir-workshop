@@ -52,6 +52,8 @@ It is recommended to use the `arith` dialect in this case.
 
 Some useful types you will need: `Type`, `IntegerAttribute`, `IntegerType`, `Location`.
 
+> Types like `IntegerType` have a `into()` method to turn them into `Type`.
+
 ## Loading a variable value
 
 To make things simpler, all variables are stored inside an `llvm.alloca`, which is an operation
