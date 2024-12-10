@@ -61,6 +61,9 @@ pub fn compile_program(program: &Program, optlevel: OptLevel, out_name: &Path) {
     pass_manager.add_pass(pass::conversion::create_to_llvm());
     pass_manager.run(&mut module).unwrap();
 
+    let mlir_code = module.as_operation().to_string();
+    std::fs::write(out_name.with_extension("mlir"), mlir_code).unwrap();
+
     // Convert the MLIR to LLVM IR (requires unsafe since we use mlir-sys and llvm-sys for this)
     let object = unsafe { llvm_compile(&module, optlevel) };
     let out_obj = out_name.with_extension("o");
@@ -95,7 +98,7 @@ pub fn compile_program_jit(program: &Program) -> ExecutionEngine {
     pass_manager.add_pass(pass::conversion::create_to_llvm());
     pass_manager.run(&mut module).unwrap();
 
-    println!("{}", module.as_operation().to_string());
+    println!("{}", module.as_operation());
 
     ExecutionEngine::new(&module, 3, &[], false)
 }
