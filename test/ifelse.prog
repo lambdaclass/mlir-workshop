@@ -5,7 +5,7 @@ fn test(a, b) {
         x = b * 2;
     } else {
         x = b;
-    }
+    };
 
     return x;
 }
