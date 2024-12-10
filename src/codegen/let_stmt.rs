@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 
-use melior::{helpers::LlvmBlockExt, ir::{r#type::IntegerType, Block, Location, Value}};
+use melior::{
+    helpers::LlvmBlockExt,
+    ir::{r#type::IntegerType, Block, Location, Value},
+};
 
 use crate::{ast::LetStmt, codegen::expressions::compile_expr};
 
