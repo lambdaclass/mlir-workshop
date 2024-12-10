@@ -10,7 +10,7 @@ This page explains a bit how to use it.
  let context = Context::new();
 ```
 
-The context is a opaque struct that holds all the created attributes, locations and more, it must be passed to nearly all
+The context is a opaque struct that holds all the created attributes, locations and more. It must be passed to nearly all
 the melior methods.
 
 ## Location
@@ -22,27 +22,26 @@ let loc: Location<'c> = Location::new(&context, filename, line, column);
 let loc = Location::unknown(&context);
 ```
 
-All operations and arguments have a location in MLIR, if there is no real location, you can use the `unknown` method.
+All operations and arguments have a location in MLIR. If there is no real location, you can use the `unknown` method.
 
 ## Module
 
-The module is a compile unit, it internally holds a single operation with a single region with a single block, more specifically, a module is a `builtin.module` operation.
+The module is a compile unit. It internally holds a single operation with a single region with a single block. More specifically, a module is a `builtin.module` operation.
 
 ```rust
 let module: Module<'c> = Module::new(Location::unknown(&context));
 ```
 
-To add an operation to a module, you an do the following:
+To add an operation to a module, you can do the following:
 
 ```rust
 // body() returns a BlockRef. since you can only add operations to blocks.
 module.body().append_operation(operation)
 ```
 
-
 ## Operation
 
-An operation is an instruction, it can hold regions, which themselves hold blocks. It also has attributes, operands, results and succesors.
+An operation is an instruction. It can hold regions, which themselves hold blocks. It also has attributes, operands, results and succesors.
 
 - Attributes are like configuration parameters for the operation.
 - Operands are the inputs, values.
@@ -51,13 +50,13 @@ An operation is an instruction, it can hold regions, which themselves hold block
 
 ### Types
 
-Each dialect can define their own types, for example, the index dialect defines the index type:
+Each dialect can define their own types. For example, the index dialect defines the index type:
 
 ```rust
 let idx = Type::index(&context);
 ```
 
-The builtin dialect defines some common types, they can be created with `Type::<name>` or with other structs, such as `IntegerType`:
+The builtin dialect defines some common types. They can be created with `Type::<name>` or with other structs, such as `IntegerType`:
 
 ```rust
 let my_f16 = Type::float16(context);
@@ -66,21 +65,21 @@ let my_u64: Type<'c> = IntegerType::new(context, 64).into();
 
 ### Attributes
 
-Most operations accept or require attributes, for example the `func.func` operation requires a `StringAttribute` to define the function name, some other operations may require a `TypeAttribute` to pass type information for example.
+Most operations accept or require attributes. For example the `func.func` operation requires a `StringAttribute` to define the function name, some other operations may require a `TypeAttribute` to pass type information for example.
 
 ```rust
 let my_type_attr: Attribute<'c> =
     TypeAttribute::new(IntegerType::new(context, 64).into()).into();
 ```
 
-In melior there are 4 ways to create a operation: using ods, using
+In melior there are 4 ways to create a operation: Using ods, using
 a method from the `dialect` melior rust module or using the operation builder.
 
 ### ODS
 
 ODS is generated using tablegen and rust macros from melior side.
 
-With ods:
+With ODS:
 
 ```rust
 use melior::dialect::ods;
@@ -123,16 +122,16 @@ let operation = OperationBuilder::new("foo", Location::unknown(&context))
 
 ### Helper Traits
 
-Some frequently used operations, mainly those in the llvm, arith and builtin dialects have a trait in melior to make it less verbose, it's a trait implemented on the Block so you can simply do `block.load(..)`.
+Some frequently used operations, mainly those in the llvm, arith and builtin dialects have a trait in melior to make it less verbose. It's a trait implemented on the Block so you can simply do `block.load(..)`.
 
 ## Region
 
-A region holds one or multiple blocks, it depends on the operation whether there are 0 or more regions.
+A region holds one or multiple blocks. It depends on the operation whether there are 0 or more regions.
 
-Usually multiple regions are used in higher level dialects, like SCF, which has while and for constructs, the CF dialect instead works
+Usually multiple regions are used in higher level dialects, like SCF, which has while and for constructs. The CF dialect instead works
 with blocks.
 
-A region is more isolated than a block, you can easily use a value from a predecessor block within a given block, but taking a value from another region that is not a parent requires passing it as an argument to the operation/block. This makes operations that work with regions like SCF a bit harder to work with in some contexts.
+A region is more isolated than a block. You can easily use a value from a predecessor block within a given block, but taking a value from another region that is not a parent requires passing it as an argument to the operation/block. This makes operations that work with regions like SCF a bit harder to work with in some contexts.
 
 ```rust
 let region = Region::new();
@@ -148,9 +147,9 @@ let func_op = func::func(context, name, r#type, region, attributes, location);
 
 ## Block
 
-A block holds a sequence of operations, control flow can only happen within the isolated operations but control returns always to the next operation within the block.
+A block holds a sequence of operations. Control flow can only happen within the isolated operations but control returns always to the next operation within the block.
 
-A block must always have a terminator, that is a operation that has the Terminator Trait, this is usually operations that do branching like `cf.br` or that diverge `llvm.unreachable`
+A block must always have a terminator, that is a operation that has the Terminator Trait. This is usually operations that do branching like `cf.br` or that diverge `llvm.unreachable`
 
 ```rust
 // To create a block we must pass the arguments it accepts, it is an array of a tuple of (Type, Location)
