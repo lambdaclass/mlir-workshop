@@ -71,6 +71,7 @@ pub fn compile_program(program: &Program, optlevel: OptLevel, out_name: &Path) {
     link_binary(&[out_obj], out_name).unwrap();
 }
 
+#[cfg(test)]
 pub fn compile_program_jit(program: &Program) -> ExecutionEngine {
     // We need a registry to hold all the dialects
     let registry = DialectRegistry::new();

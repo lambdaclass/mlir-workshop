@@ -42,11 +42,12 @@ module.body().append_operation(operation)
 
 ## Operation
 
-An operation is an instruction, it holds regions, which themselves hold blocks. It also has attributes, operands and results.
+An operation is an instruction, it can hold regions, which themselves hold blocks. It also has attributes, operands, results and succesors.
 
 - Attributes are like configuration parameters for the operation.
 - Operands are the inputs, values.
 - Results are the result values the operation produces, it can be 1 or more.
+- Successors are blocks to branch into.
 
 ### Types
 
@@ -65,14 +66,15 @@ let my_u64: Type<'c> = IntegerType::new(context, 64).into();
 
 ### Attributes
 
-Most operations accept or require attributes, for example the `func.func` operation requires a `StringAttribute` to define the function name, or a `TypeAttribute` to define the function type.
+Most operations accept or require attributes, for example the `func.func` operation requires a `StringAttribute` to define the function name, some other operations may require a `TypeAttribute` to pass type information for example.
 
 ```rust
 let my_type_attr: Attribute<'c> =
     TypeAttribute::new(IntegerType::new(context, 64).into()).into();
 ```
 
-In melior there are 4 ways to create a operation, using ods, using a method from the `dialect` melior rust module or using the operation builder.
+In melior there are 4 ways to create a operation: using ods, using
+a method from the `dialect` melior rust module or using the operation builder.
 
 ### ODS
 
@@ -83,7 +85,10 @@ With ods:
 ```rust
 use melior::dialect::ods;
 
-let my_alloca = block.append_operation(ods::llvm::alloca(context, res, array_size, elem_type, location).into());
+let my_alloca = block.append_operation(
+    ods::llvm::alloca(context, res, array_size,
+                      elem_type, location).into()
+);
 // Get the returned ptr
 let ptr: Value<'c> = my_alloca.result(0).unwrap().into();
 ```
@@ -94,7 +99,8 @@ This is a handcrafted API, so it may miss a lot of operations:
 
 ```rust
 let my_alloca = block.append_operation(
-        melior::dialect::llvm::alloca(context, array_size, ptr_type, location, extra_options)
+        melior::dialect::llvm::alloca(context, array_size, ptr_type,
+                                      location, extra_options)
     );
 // Get the returned ptr
 let ptr: Value<'c> = my_alloca.result(0).unwrap().into();
@@ -121,7 +127,7 @@ Some frequently used operations, mainly those in the llvm, arith and builtin dia
 
 ## Region
 
-A region holds one or multiple blocks, it depends on the operation whether there are 1 or more regions.
+A region holds one or multiple blocks, it depends on the operation whether there are 0 or more regions.
 
 Usually multiple regions are used in higher level dialects, like SCF, which has while and for constructs, the CF dialect instead works
 with blocks.
@@ -142,7 +148,9 @@ let func_op = func::func(context, name, r#type, region, attributes, location);
 
 ## Block
 
-A block holds a sequence of operations, control flow can only happen within the isolated operations but control returns always to the next operation within the block. A block must always have a terminator, that is a operation that has the Terminator Trait, this is usually operations that do branching like `cf.br` or that diverge `llvm.unreachable`
+A block holds a sequence of operations, control flow can only happen within the isolated operations but control returns always to the next operation within the block.
+
+A block must always have a terminator, that is a operation that has the Terminator Trait, this is usually operations that do branching like `cf.br` or that diverge `llvm.unreachable`
 
 ```rust
 // To create a block we must pass the arguments it accepts, it is an array of a tuple of (Type, Location)
