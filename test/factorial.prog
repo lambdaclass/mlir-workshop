@@ -1,0 +1,9 @@
+fn test(n, acc) {
+    if n != 0 {
+        if n != 1 {
+            acc = test(n - 1, acc * n);
+        }
+    }
+
+    return acc;
+}

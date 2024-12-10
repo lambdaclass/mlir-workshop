@@ -65,6 +65,15 @@ pub Let: LetStmt = {
     }
 }
 
+pub Assign: AssignStmt = {
+    <variable:Name> "=" <expr:Expr> => {
+        AssignStmt {
+            variable,
+            expr
+        }
+    }
+}
+
 pub Return: ReturnStmt = {
     "return" <expr:Expr> => {
         ReturnStmt {
@@ -90,6 +99,7 @@ pub Else: Block = {
 
 pub Stmt: Statement = {
     <Let> => Statement::Let(<>),
+    <Assign> => Statement::Assign(<>),
     <If> => Statement::If(<>),
     <Return> => Statement::Return(<>),
 }

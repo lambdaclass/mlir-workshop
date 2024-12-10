@@ -12,6 +12,7 @@ use crate::ast::{Expr, Opcode};
 
 use super::ModuleCtx;
 
+// A right hand side expression: `2 + x * 3`
 pub fn compile_expr<'ctx: 'parent, 'parent>(
     // Helper struct with the MLIR Context and Module
     ctx: &ModuleCtx<'ctx>,
