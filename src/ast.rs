@@ -17,7 +17,7 @@ pub enum Opcode {
     Neq,
 }
 
-// An statement, separated by ;
+// A statement, separated by ;
 #[derive(Debug, Clone)]
 pub enum Statement {
     Let(LetStmt),
