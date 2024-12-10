@@ -36,3 +36,38 @@ fn main() {
 
     compile_program(&program, args.opt_level.into(), &args.output);
 }
+
+#[cfg(test)]
+mod tests {
+    use std::ptr::null_mut;
+
+    use melior::ExecutionEngine;
+
+    use crate::{codegen::compile_program_jit, grammar};
+
+    fn call_program(engine: &ExecutionEngine, params: &[i64]) -> i64 {
+        let return_ptr: *mut () = null_mut();
+        let mut args = vec![return_ptr];
+
+        for arg in params {
+            args.push(arg as *const _ as *mut ());
+        }
+        let args = &mut [return_ptr];
+        unsafe {
+            engine.invoke_packed("add", args).unwrap();
+            *return_ptr.cast::<i64>()
+        }
+    }
+
+    #[test]
+    fn add() {
+        let program = grammar::ProgramParser::new()
+            .parse(include_str!("../test/add.prog"))
+            .unwrap();
+
+        let engine = compile_program_jit(&program);
+
+        let res = call_program(&engine, &[2, 3]);
+        assert_eq!(res, 4);
+    }
+}

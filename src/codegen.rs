@@ -7,7 +7,7 @@ use melior::{
     ir::{r#type::IntegerType, Block, Location, Module, Region, Type, Value},
     pass::{self, PassManager},
     utility::register_all_dialects,
-    Context,
+    Context, ExecutionEngine,
 };
 use return_stmt::compile_return;
 
@@ -58,6 +58,36 @@ pub fn compile_program(program: &Program, optlevel: OptLevel, out_name: &Path) {
     let out_obj = out_name.with_extension("o");
     std::fs::write(&out_obj, &object).unwrap();
     link_binary(&[out_obj], out_name).unwrap();
+}
+
+pub fn compile_program_jit(program: &Program) -> ExecutionEngine {
+    // We need a registry to hold all the dialects
+    let registry = DialectRegistry::new();
+    // Register all dialects that come with MLIR.
+    register_all_dialects(&registry);
+    let context = Context::new();
+    context.append_dialect_registry(&registry);
+    context.load_all_available_dialects();
+
+    let mut module = Module::new(Location::unknown(&context));
+    let ctx = ModuleCtx {
+        ctx: &context,
+        module: &module,
+    };
+
+    for func in &program.functions {
+        compile_function(&ctx, func);
+    }
+
+    // Run passes on module to convert all dialects to LLVM.
+    let pass_manager = PassManager::new(&context);
+    pass_manager.enable_verifier(true);
+    pass_manager.add_pass(pass::transform::create_canonicalizer());
+    pass_manager.add_pass(pass::conversion::create_scf_to_control_flow()); // needed because to_llvm doesn't include it.
+    pass_manager.add_pass(pass::conversion::create_to_llvm());
+    pass_manager.run(&mut module).unwrap();
+
+    ExecutionEngine::new(&module, 3, &[], false)
 }
 
 fn compile_function(ctx: &ModuleCtx<'_>, func: &Function) {
