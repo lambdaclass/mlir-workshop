@@ -6,8 +6,8 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.5.23", features = ["derive"] }
 logos = "0.15.0"
-melior = { version = "0.19.2", features = ["ods-dialects"] }
-mlir-sys = "0.3.0"
+melior = { version = "0.20.0", features = ["ods-dialects"] }
+mlir-sys = "0.4.1"
 lalrpop-util = { version = "0.22.0", features = ["lexer"] }
 ariadne = { version = "0.5.0", features = ["auto-color"] }
 tracing = "0.1.41"
