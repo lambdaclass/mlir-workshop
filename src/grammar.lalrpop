@@ -34,6 +34,10 @@ Name: String = {
 Term: Expr = {
     Num => Expr::Number(<>),
     <Name> => Expr::Variable(<>),
+    <target:Name> "(" <args:Comma<Expr>> ")" => Expr::Call {
+        target,
+        args
+    },
     "(" <Expr> ")",
 };
 
