@@ -10,3 +10,5 @@
 - [Workshop: Compiling If/Else](./workshop_p6.md)
 - [Workshop: Compiling Function calls](./workshop_p7.md)
 - [Workshop: Compiling Functions](./workshop_p8.md)
+- [Workshop: Testing](./workshop_p9.md)
+- [Workshop: Glue code](./workshop_p10.md)
