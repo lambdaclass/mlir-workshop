@@ -24,6 +24,7 @@ pub enum Statement {
     Let(LetStmt),
     Assign(AssignStmt),
     If(IfStmt),
+    While(WhileStmt),
     Return(ReturnStmt),
 }
 
@@ -48,6 +49,12 @@ pub struct IfStmt {
     pub cond: Expr,
     pub then: Block,
     pub r#else: Option<Block>,
+}
+
+#[derive(Debug, Clone)]
+pub struct WhileStmt {
+    pub cond: Expr,
+    pub then: Block,
 }
 
 /// The return statement of a function

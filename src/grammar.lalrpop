@@ -93,6 +93,15 @@ pub If: IfStmt = {
     }
 }
 
+pub While: WhileStmt = {
+    "while" <cond:Expr> "{" <then:Block> "}" => {
+        WhileStmt {
+            cond,
+            then,
+        }
+    }
+}
+
 pub Else: Block = {
     "else" "{" <Block> "}" => <>
 }
@@ -101,6 +110,7 @@ pub Stmt: Statement = {
     <Let> => Statement::Let(<>),
     <Assign> => Statement::Assign(<>),
     <If> => Statement::If(<>),
+    <While> => Statement::While(<>),
     <Return> => Statement::Return(<>),
 }
 

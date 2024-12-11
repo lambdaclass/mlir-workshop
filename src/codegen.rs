@@ -15,6 +15,7 @@ use melior::{
     Context,
 };
 use return_stmt::compile_return;
+use while_stmt::compile_while;
 
 use crate::{
     ast::{Function, Program, Statement},
@@ -25,6 +26,7 @@ pub mod expressions;
 pub mod ifelse_stmt;
 pub mod let_stmt;
 pub mod return_stmt;
+pub mod while_stmt;
 
 pub struct ModuleCtx<'c> {
     pub ctx: &'c Context,
@@ -179,6 +181,9 @@ fn compile_statement<'ctx: 'parent, 'parent>(
         }
         Statement::Assign(assign_stmt) => {
             compile_assign(ctx, locals, block, assign_stmt);
+        }
+        Statement::While(while_stmt) => {
+            compile_while(ctx, locals, block, while_stmt);
         }
     }
 }
