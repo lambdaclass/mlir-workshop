@@ -1,10 +1,12 @@
 use std::collections::HashMap;
 
 use melior::{
-    dialect::{arith, llvm},
+    dialect::{arith, func},
     helpers::{ArithBlockExt, BuiltinBlockExt, LlvmBlockExt},
     ir::{
-        attribute::IntegerAttribute, r#type::IntegerType, Block, BlockRef, Location, Type, Value,
+        attribute::{FlatSymbolRefAttribute, IntegerAttribute},
+        r#type::IntegerType,
+        Block, BlockRef, Location, Type, Value,
     },
 };
 
@@ -25,9 +27,7 @@ pub fn compile_expr<'ctx: 'parent, 'parent>(
 ) -> Value<'ctx, 'parent> {
     match expr {
         Expr::Number(value) => compile_number(ctx, block, value),
-        Expr::Variable(name) => {
-            todo!("implement loading values from the given variable name")
-        }
+        Expr::Variable(name) => compile_variable(ctx, block, name, locals),
         Expr::Op(lhs_expr, opcode, rhs_expr) => match opcode {
             Opcode::Mul => compile_mul(ctx, block, lhs_expr, rhs_expr, locals),
             Opcode::Div => compile_div(ctx, block, lhs_expr, rhs_expr, locals),
@@ -36,7 +36,21 @@ pub fn compile_expr<'ctx: 'parent, 'parent>(
             Opcode::Eq => compile_eq(ctx, block, lhs_expr, rhs_expr, locals),
             Opcode::Neq => compile_neq(ctx, block, lhs_expr, rhs_expr, locals),
         },
-        Expr::Call { target, args } => todo!("implement function call"),
+        Expr::Call { target, args } => compile_function_call(ctx, block, target, args, locals),
+    }
+}
+
+fn compile_variable<'ctx: 'parent, 'parent>(
+    ctx: &ModuleCtx<'ctx>,
+    block: &'parent Block<'ctx>,
+    name: &String,
+    locals: &HashMap<String, Value<'ctx, 'parent>>,
+) -> Value<'ctx, 'parent> {
+    let location = Location::unknown(&ctx.ctx);
+    let int_ty = IntegerType::new(&ctx.ctx, 64).into();
+    match locals.get(name) {
+        Some(v) => block.load(ctx.ctx, location, *v, int_ty).unwrap(),
+        None => panic!("variable not declared"),
     }
 }
 
@@ -49,7 +63,10 @@ fn compile_number<'ctx: 'parent, 'parent>(
     let int_type = IntegerType::new(&ctx.ctx, 64).into();
     let int_atributte = IntegerAttribute::new(int_type, *value).into();
 
-    block.append_op_result(arith::constant(&ctx.ctx, int_atributte, location)).unwrap().into()
+    block
+        .append_op_result(arith::constant(&ctx.ctx, int_atributte, location))
+        .unwrap()
+        .into()
 }
 
 fn compile_mul<'ctx: 'parent, 'parent>(
@@ -95,7 +112,10 @@ fn compile_add<'ctx: 'parent, 'parent>(
     let lhs: Value<'ctx, 'parent> = compile_expr(ctx, locals, block, lhs_expr);
     let rhs: Value<'ctx, 'parent> = compile_expr(ctx, locals, block, rhs_expr);
 
-    block.append_op_result(arith::addi(lhs, rhs, location)).unwrap().into()
+    block
+        .append_op_result(arith::addi(lhs, rhs, location))
+        .unwrap()
+        .into()
 }
 
 fn compile_sub<'ctx: 'parent, 'parent>(
@@ -109,7 +129,10 @@ fn compile_sub<'ctx: 'parent, 'parent>(
     let lhs: Value<'ctx, 'parent> = compile_expr(ctx, locals, block, lhs_expr);
     let rhs: Value<'ctx, 'parent> = compile_expr(ctx, locals, block, rhs_expr);
 
-    block.append_op_result(arith::subi(lhs, rhs, location)).unwrap().into()
+    block
+        .append_op_result(arith::subi(lhs, rhs, location))
+        .unwrap()
+        .into()
 }
 
 fn compile_eq<'ctx: 'parent, 'parent>(
@@ -123,13 +146,16 @@ fn compile_eq<'ctx: 'parent, 'parent>(
     let lhs: Value<'ctx, 'parent> = compile_expr(ctx, locals, block, lhs_expr);
     let rhs: Value<'ctx, 'parent> = compile_expr(ctx, locals, block, rhs_expr);
 
-    block.append_op_result(arith::cmpi(
-        &ctx.ctx,
-        arith::CmpiPredicate::Eq,
-        lhs,
-        rhs,
-        location,
-    )).unwrap().into()
+    block
+        .append_op_result(arith::cmpi(
+            &ctx.ctx,
+            arith::CmpiPredicate::Eq,
+            lhs,
+            rhs,
+            location,
+        ))
+        .unwrap()
+        .into()
 }
 
 fn compile_neq<'ctx: 'parent, 'parent>(
@@ -143,11 +169,42 @@ fn compile_neq<'ctx: 'parent, 'parent>(
     let lhs: Value<'ctx, 'parent> = compile_expr(ctx, locals, block, lhs_expr);
     let rhs: Value<'ctx, 'parent> = compile_expr(ctx, locals, block, rhs_expr);
 
-    block.append_op_result(arith::cmpi(
-        &ctx.ctx,
-        arith::CmpiPredicate::Ne,
-        lhs,
-        rhs,
-        location,
-    )).unwrap().into()
+    block
+        .append_op_result(arith::cmpi(
+            &ctx.ctx,
+            arith::CmpiPredicate::Ne,
+            lhs,
+            rhs,
+            location,
+        ))
+        .unwrap()
+        .into()
+}
+
+fn compile_function_call<'ctx: 'parent, 'parent>(
+    ctx: &ModuleCtx<'ctx>,
+    block: &'parent Block<'ctx>,
+    target: &String,
+    args: &Vec<Expr>,
+    locals: &HashMap<String, Value<'ctx, 'parent>>,
+) -> Value<'ctx, 'parent> {
+    let mut func_args = vec![];
+    let location = Location::unknown(ctx.ctx);
+    let function = FlatSymbolRefAttribute::new(&ctx.ctx, target);
+    let int_ty = IntegerType::new(&ctx.ctx, 64).into();
+
+    for arg in args {
+        func_args.push(compile_expr(ctx, locals, block, arg));
+    }
+
+    block
+        .append_op_result(func::call(
+            &ctx.ctx,
+            function,
+            &func_args,
+            &[int_ty],
+            location,
+        ))
+        .unwrap()
+        .into()
 }

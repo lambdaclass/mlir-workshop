@@ -5,9 +5,10 @@ use let_stmt::{compile_assign, compile_let};
 use melior::{
     dialect::{
         func::{self, func},
-        DialectRegistry,
+        llvm::{self, r#type},
+        ods, DialectRegistry,
     },
-    helpers::LlvmBlockExt,
+    helpers::{BuiltinBlockExt, LlvmBlockExt},
     ir::{
         attribute::{StringAttribute, TypeAttribute},
         r#type::{FunctionType, IntegerType},
@@ -121,12 +122,31 @@ fn compile_function(ctx: &ModuleCtx<'_>, func: &Function) {
     let mut locals: HashMap<String, Value> = HashMap::new();
 
     // Allocate space for the arguments, get them from the block, storing them and save them on locals hashmap.
+    let int_ty = IntegerType::new(ctx.ctx, 64).into();
+    let location = Location::unknown(ctx.ctx);
+    for (i, arg) in func.args.iter().enumerate() {
+        let val = block.argument(i).unwrap().into();
+        let ptr = block.alloca1(ctx.ctx, location, int_ty, 8).unwrap().into();
+
+        block.store(ctx.ctx, location, ptr, val).unwrap();
+        locals.insert(arg.clone(), ptr);
+    }
 
     for stmt in &func.body.stmts {
         compile_statement(ctx, &mut locals, &block, stmt);
     }
 
+    let func_ty = TypeAttribute::new(FunctionType::new(ctx.ctx, &func_args, &[int_ty]).into());
+
     // Create the func operation here.
+    ctx.module.body().append_operation(func::func(
+        ctx.ctx,
+        StringAttribute::new(ctx.ctx, &func.name),
+        func_ty,
+        region,
+        &[],
+        location,
+    ));
 }
 
 fn compile_statement<'ctx: 'parent, 'parent>(

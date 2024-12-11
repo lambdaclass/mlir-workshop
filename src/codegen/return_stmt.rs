@@ -15,5 +15,10 @@ pub fn compile_return<'ctx, 'parent>(
     block: &'parent Block<'ctx>,
     stmt: &ReturnStmt,
 ) {
-    todo!("implement return")
+    let location = Location::unknown(ctx.ctx);
+    let ReturnStmt { expr } = stmt;
+
+    let expr_res = compile_expr(ctx, locals, block, expr);
+
+    block.append_operation(func::r#return(&[expr_res], location));
 }
