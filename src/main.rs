@@ -80,4 +80,5 @@ mod tests {
     program_test! {constant, constant, 2, 2, 6}
     program_test! {call, call, 2, 2, 8}
     program_test! {factorial, factorial, 5, 1, 120}
+    program_test! {r#while, while, 5, 1, 120}
 }
