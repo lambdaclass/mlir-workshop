@@ -121,12 +121,28 @@ fn compile_function(ctx: &ModuleCtx<'_>, func: &Function) {
     let mut locals: HashMap<String, Value> = HashMap::new();
 
     // Allocate space for the arguments, get them from the block, storing them and save them on locals hashmap.
+    let i64_type = IntegerType::new(ctx.ctx, 64).into();
+    let location = Location::unknown(ctx.ctx);
+    for (i, arg) in func.args.iter().enumerate() {
+        let value = block.argument(i).unwrap();
+        let ptr = block.alloca1(ctx.ctx, location, i64_type, 8).unwrap();
+        block.store(ctx.ctx, location, ptr, value.into()).unwrap();
+        locals.insert(arg.clone(), ptr);
+    }
 
     for stmt in &func.body.stmts {
         compile_statement(ctx, &mut locals, &block, stmt);
     }
 
     // Create the func operation here.
+    ctx.module.body().append_operation(func::func(
+        ctx.ctx,
+        StringAttribute::new(ctx.ctx, &func.name),
+        TypeAttribute::new(FunctionType::new(ctx.ctx, &func_args, &[i64_type]).into()),
+        region,
+        &[],
+        location,
+    ));
 }
 
 fn compile_statement<'ctx: 'parent, 'parent>(
@@ -147,6 +163,6 @@ fn compile_statement<'ctx: 'parent, 'parent>(
         }
         Statement::Assign(assign_stmt) => {
             compile_assign(ctx, locals, block, assign_stmt);
-        },
+        }
     }
 }
