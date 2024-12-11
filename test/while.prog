@@ -1,0 +1,14 @@
+fn test(n, acc) {
+    let i = 2;
+
+    while i != (n + 1) {
+        acc = acc * i;
+        i = i + 1;
+    };
+
+    return acc;
+}
+
+fn main() {
+    return test(6, 1)
+}
