@@ -35,14 +35,35 @@ pub fn compile_expr<'ctx: 'parent, 'parent>(
                 IntegerType::new(&ctx.ctx, 64).into(),
             )
             .unwrap(),
-        Expr::Op(lhs_expr, opcode, rhs_expr) => match opcode {
-            Opcode::Mul => todo!("implement mul"),
-            Opcode::Div => todo!("implement div"),
-            Opcode::Add => todo!("implement add"),
-            Opcode::Sub => todo!("implement sub"),
-            Opcode::Eq => todo!("implement eq"),
-            Opcode::Neq => todo!("implement neq"),
-        },
+        Expr::Op(lhs_expr, opcode, rhs_expr) => {
+            let lhs_value = compile_expr(ctx, locals, block, &lhs_expr);
+            let rhs_value = compile_expr(ctx, locals, block, &rhs_expr);
+            let location = Location::unknown(&ctx.ctx);
+            match opcode {
+                Opcode::Mul => block.muli(lhs_value, rhs_value, location).unwrap(),
+                Opcode::Div => block.divsi(lhs_value, rhs_value, location).unwrap(),
+                Opcode::Add => block.addi(lhs_value, rhs_value, location).unwrap(),
+                Opcode::Sub => block.subi(lhs_value, rhs_value, location).unwrap(),
+                Opcode::Eq => block
+                    .cmpi(
+                        &ctx.ctx,
+                        arith::CmpiPredicate::Eq,
+                        lhs_value,
+                        rhs_value,
+                        location,
+                    )
+                    .unwrap(),
+                Opcode::Neq => block
+                    .cmpi(
+                        &ctx.ctx,
+                        arith::CmpiPredicate::Ne,
+                        lhs_value,
+                        rhs_value,
+                        location,
+                    )
+                    .unwrap(),
+            }
+        }
         Expr::Call { target, args } => todo!("implement function call"),
     }
 }
