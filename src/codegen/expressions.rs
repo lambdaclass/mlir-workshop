@@ -1,10 +1,12 @@
 use std::collections::HashMap;
 
 use melior::{
-    dialect::{arith, llvm},
-    helpers::{ArithBlockExt, LlvmBlockExt},
+    dialect::{arith, func, llvm},
+    helpers::{ArithBlockExt, BuiltinBlockExt, LlvmBlockExt},
     ir::{
-        attribute::IntegerAttribute, r#type::IntegerType, Block, BlockRef, Location, Type, Value,
+        attribute::{FlatSymbolRefAttribute, IntegerAttribute},
+        r#type::IntegerType,
+        Block, BlockRef, Location, Type, Value,
     },
 };
 
@@ -64,6 +66,21 @@ pub fn compile_expr<'ctx: 'parent, 'parent>(
                     .unwrap(),
             }
         }
-        Expr::Call { target, args } => todo!("implement function call"),
+        Expr::Call { target, args } => {
+            let args = args
+                .iter()
+                .map(|expr| compile_expr(ctx, locals, block, expr))
+                .collect::<Vec<_>>();
+
+            block
+                .append_op_result(func::call(
+                    &ctx.ctx,
+                    FlatSymbolRefAttribute::new(&ctx.ctx, &target),
+                    &args,
+                    &[IntegerType::new(&ctx.ctx, 64).into()],
+                    Location::unknown(&ctx.ctx),
+                ))
+                .unwrap()
+        }
     }
 }
