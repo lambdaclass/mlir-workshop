@@ -62,7 +62,7 @@ A function is made up of blocks, each block contains a sequence of instructions,
 It uses Single Static Assignment form (SSA form), which means a variable is assigned once and only once, this allows LLVM to do a lot of optimizations.
 
 Due to this, when control flow is involved, one must take care to dominate all the uses, for example you may have a target block
-that has 2 predecessors (2 blocks where each ends up jumping to this target block), each of these predecessors can define variables that will be used in this target block, to "unify" those variables in the target block you must use the [phi](https://llvm.org/docs/LangRef.html#i-phi) instruction, which defines a PHI node.
+that has 2 predecessors (2 blocks where each ends up jumping to this target block), each of these predecessors can define variables that will be used in this target block, to "unify" those variables (to do dependency analysis) in the target block you must use the [phi](https://llvm.org/docs/LangRef.html#i-phi) instruction, which defines a PHI node.
 
 One can avoid using PHI nodes by relying on `allocas`, a alloca is a reservation of the stack space, basically you give it a size and align and it gives you a pointer to this allocation, you can then simply load/store that pointer, from any branch and you don't have to deal with PHI nodes this way, this is what most languages do, like Rust, they rely on LLVM to later optimize the allocas into register uses whenever possible.
 
