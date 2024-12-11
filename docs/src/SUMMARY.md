@@ -12,3 +12,4 @@
 - [Workshop: Compiling Functions](./workshop_p8.md)
 - [Workshop: Testing](./workshop_p9.md)
 - [Workshop: Glue code](./workshop_p10.md)
+- [End](./end.md)
