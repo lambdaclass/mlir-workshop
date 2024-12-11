@@ -6,7 +6,7 @@ With this dialect you don't need to add extra blocks, since the control flow wil
 The only limitation is that we can't do early returns this way, but for this simple language it won't matter.
 
 > You will need to clone the `locals` HashMap inside the created regions to avoid lifetime issues. But since any variable created
-inside the if or else block only live for that scope, it works good.
+inside the if or else block only live for that scope, it works well.
 
 ```rust
 // src/codegen/ifelse_stmt.rs

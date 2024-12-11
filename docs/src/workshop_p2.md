@@ -34,6 +34,7 @@ The language AST is quite simple, it consists of the following:
 #[derive(Debug, Clone)]
 pub enum Expr {
     Number(i64),
+    Call { target: String, args: Vec<Expr> },
     Variable(String),
     Op(Box<Expr>, Opcode, Box<Expr>),
 }
