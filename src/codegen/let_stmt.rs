@@ -21,6 +21,22 @@ pub fn compile_let<'ctx: 'parent, 'parent>(
     block: &'parent Block<'ctx>,
     stmt: &LetStmt,
 ) {
+    let ptr = block
+        .alloca1(
+            &ctx.ctx,
+            Location::unknown(&ctx.ctx),
+            IntegerType::new(&ctx.ctx, 64).into(),
+            0,
+        )
+        .unwrap();
+
+    let value = compile_expr(ctx, locals, block, &stmt.expr);
+
+    block
+        .store(&ctx.ctx, Location::unknown(&ctx.ctx), ptr, value)
+        .unwrap();
+
+    locals.insert(stmt.variable.clone(), ptr);
 }
 
 /// An assign statement
