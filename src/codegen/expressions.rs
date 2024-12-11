@@ -24,9 +24,9 @@ pub fn compile_expr<'ctx: 'parent, 'parent>(
     expr: &Expr,
 ) -> Value<'ctx, 'parent> {
     match expr {
-        Expr::Number(_value) => {
-            todo!("implement constant numbers")
-        }
+        Expr::Number(value) => block
+            .const_int(&ctx.ctx, Location::unknown(&ctx.ctx), value, 64)
+            .unwrap(),
         Expr::Variable(name) => {
             todo!("implement loading values from the given variable name")
         }
