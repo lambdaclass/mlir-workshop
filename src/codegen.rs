@@ -7,7 +7,7 @@ use melior::{
         func::{self, func},
         DialectRegistry,
     },
-    helpers::LlvmBlockExt,
+    helpers::{BuiltinBlockExt, LlvmBlockExt},
     ir::{
         attribute::{StringAttribute, TypeAttribute},
         r#type::{FunctionType, IntegerType},
@@ -124,11 +124,41 @@ fn compile_function(ctx: &ModuleCtx<'_>, func: &Function) {
 
     // Allocate space for the arguments, get them from the block, storing them and save them on locals hashmap.
 
+    for (i, arg_name) in func.args.iter().enumerate() {
+        let arg_ptr = block
+            .alloca1(
+                &ctx.ctx,
+                Location::unknown(&ctx.ctx),
+                IntegerType::new(ctx.ctx, 64).into(),
+                0,
+            )
+            .unwrap();
+
+        let arg = block.arg(i).unwrap();
+
+        block
+            .store(&ctx.ctx, Location::unknown(&ctx.ctx), arg_ptr, arg)
+            .unwrap();
+
+        locals.insert(arg_name.clone(), arg_ptr);
+    }
+
     for stmt in &func.body.stmts {
         compile_statement(ctx, &mut locals, &block, stmt);
     }
 
     // Create the func operation here.
+
+    ctx.module.body().append_operation(func::func(
+        &ctx.ctx,
+        StringAttribute::new(ctx.ctx, &func.name),
+        TypeAttribute::new(
+            FunctionType::new(ctx.ctx, &func_args, &[IntegerType::new(ctx.ctx, 64).into()]).into(),
+        ),
+        region,
+        &[],
+        Location::unknown(ctx.ctx),
+    ));
 }
 
 fn compile_statement<'ctx: 'parent, 'parent>(
