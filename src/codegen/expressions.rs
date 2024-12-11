@@ -27,9 +27,14 @@ pub fn compile_expr<'ctx: 'parent, 'parent>(
         Expr::Number(value) => block
             .const_int(&ctx.ctx, Location::unknown(&ctx.ctx), value, 64)
             .unwrap(),
-        Expr::Variable(name) => {
-            todo!("implement loading values from the given variable name")
-        }
+        Expr::Variable(name) => block
+            .load(
+                &ctx.ctx,
+                Location::unknown(&ctx.ctx),
+                *locals.get(name).unwrap(),
+                IntegerType::new(&ctx.ctx, 64).into(),
+            )
+            .unwrap(),
         Expr::Op(lhs_expr, opcode, rhs_expr) => match opcode {
             Opcode::Mul => todo!("implement mul"),
             Opcode::Div => todo!("implement div"),
