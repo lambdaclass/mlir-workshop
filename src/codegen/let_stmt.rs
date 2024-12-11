@@ -48,5 +48,11 @@ pub fn compile_assign<'ctx: 'parent, 'parent>(
     block: &'parent Block<'ctx>,
     stmt: &AssignStmt,
 ) {
-    todo!("implement assign")
+    let ptr = locals.get(&stmt.variable).unwrap();
+
+    let value = compile_expr(ctx, locals, block, &stmt.expr);
+
+    block
+        .store(&ctx.ctx, Location::unknown(&ctx.ctx), *ptr, value)
+        .unwrap();
 }
