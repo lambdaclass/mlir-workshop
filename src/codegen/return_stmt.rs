@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use melior::{
     dialect::func,
-    ir::{Block, BlockRef, Location, Value},
+    ir::{Block, Location, Value},
 };
 
 use crate::ast::ReturnStmt;
