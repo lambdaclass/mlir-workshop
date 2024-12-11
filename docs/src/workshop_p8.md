@@ -4,6 +4,8 @@ Now to wrap up the function itself needs to be created, using the `func` dialect
 
 You also need to allocate space for the arguments, and store the value there. You can get the value from the block arguments.
 
+Remember that in this language functions always return a i64 value.
+
 Some useful types you will need: `Type`, `IntegerAttribute`, `IntegerType`, `FunctionType`, `TypeAttribute`, `StringAttribute`.
 
 ```rust
