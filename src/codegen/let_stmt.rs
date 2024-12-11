@@ -5,7 +5,10 @@ use melior::{
     ir::{r#type::IntegerType, Block, Location, Value},
 };
 
-use crate::{ast::{AssignStmt, LetStmt}, codegen::expressions::compile_expr};
+use crate::{
+    ast::{AssignStmt, LetStmt},
+    codegen::expressions::compile_expr,
+};
 
 use super::ModuleCtx;
 

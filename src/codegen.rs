@@ -14,7 +14,7 @@ use melior::{
         Block, Location, Module, Region, Type, Value,
     },
     pass::{self, PassManager},
-    utility::register_all_dialects,
+    utility::{register_all_dialects, register_all_llvm_translations},
     Context, ExecutionEngine,
 };
 use return_stmt::compile_return;
@@ -42,6 +42,7 @@ pub fn compile_program(program: &Program, optlevel: OptLevel, out_name: &Path) {
     let context = Context::new();
     context.append_dialect_registry(&registry);
     context.load_all_available_dialects();
+    register_all_llvm_translations(&context);
 
     let mut module = Module::new(Location::unknown(&context));
     let ctx = ModuleCtx {
@@ -80,6 +81,7 @@ pub fn compile_program_jit(program: &Program) -> ExecutionEngine {
     let context = Context::new();
     context.append_dialect_registry(&registry);
     context.load_all_available_dialects();
+    register_all_llvm_translations(&context);
 
     let mut module = Module::new(Location::unknown(&context));
     let ctx = ModuleCtx {
@@ -147,6 +149,6 @@ fn compile_statement<'ctx: 'parent, 'parent>(
         }
         Statement::Assign(assign_stmt) => {
             compile_assign(ctx, locals, block, assign_stmt);
-        },
+        }
     }
 }
