@@ -21,7 +21,6 @@ pub fn compile_let<'ctx: 'parent, 'parent>(
     block: &'parent Block<'ctx>,
     stmt: &LetStmt,
 ) {
-    todo!("implement let")
 }
 
 /// An assign statement
