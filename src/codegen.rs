@@ -147,6 +147,6 @@ fn compile_statement<'ctx: 'parent, 'parent>(
         }
         Statement::Assign(assign_stmt) => {
             compile_assign(ctx, locals, block, assign_stmt);
-        },
+        }
     }
 }
