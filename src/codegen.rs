@@ -3,10 +3,7 @@ use std::{collections::HashMap, path::Path};
 use ifelse_stmt::compile_if;
 use let_stmt::{compile_assign, compile_let};
 use melior::{
-    dialect::{
-        func::{self, func},
-        DialectRegistry,
-    },
+    dialect::{func, DialectRegistry},
     helpers::{BuiltinBlockExt, LlvmBlockExt},
     ir::{
         attribute::{StringAttribute, TypeAttribute},
@@ -15,7 +12,7 @@ use melior::{
     },
     pass::{self, PassManager},
     utility::{register_all_dialects, register_all_llvm_translations},
-    Context, ExecutionEngine,
+    Context,
 };
 use return_stmt::compile_return;
 
@@ -71,6 +68,9 @@ pub fn compile_program(program: &Program, optlevel: OptLevel, out_name: &Path) {
     std::fs::write(&out_obj, &object).unwrap();
     link_binary(&[out_obj], out_name).unwrap();
 }
+
+#[cfg(test)]
+use melior::ExecutionEngine;
 
 #[cfg(test)]
 pub fn compile_program_jit(program: &Program) -> ExecutionEngine {

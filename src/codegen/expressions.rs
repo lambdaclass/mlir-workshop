@@ -1,13 +1,9 @@
 use std::collections::HashMap;
 
 use melior::{
-    dialect::{arith, func, llvm},
+    dialect::{arith, func},
     helpers::{ArithBlockExt, BuiltinBlockExt, LlvmBlockExt},
-    ir::{
-        attribute::{FlatSymbolRefAttribute, IntegerAttribute},
-        r#type::IntegerType,
-        Block, BlockRef, Location, Type, Value,
-    },
+    ir::{attribute::FlatSymbolRefAttribute, r#type::IntegerType, Block, Location, Value},
 };
 
 use crate::ast::{Expr, Opcode};
